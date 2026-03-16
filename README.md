@@ -25,13 +25,23 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
+- [X] Describe the game's purpose.
+1.The games purpose is to randomly generate a number in a specificed field depending on the difficulty selected. Afterwards the player will have a set amount of guesses to find the secret number other wise they will have to try again in a new game. 
+- [X] Detail which bugs you found.
+1.The hint was guiding me in the wrong direction from the secret. 
+2.The new game button was not letting me immediately start a new game without refreshing the page. 
+3.The amount of attemps was having a case of off by 1 error because it would say 6 attempts and onlt give the user 5. 
+
 - [ ] Explain what fixes you applied.
+1.I fixed the hints to give the user the right information and guide them the correct way to the secret. 
+2.The new game button now actually sets the variables to the statuses that a new game should be at. 
+3.Fixed the number of attempts being saved in the initial session state from 1 to 0 so the user has the correct amount of attempts presented in the display.
+4.Fixed the displaying of the range under make a guess to display the ranges depending on the difficulty selected. 
 
 ## 📸 Demo
 
-- [ ] [Insert a screenshot of your fixed, winning game here]
+- [X] [Insert a screenshot of your fixed, winning game here]
+![alt text](image.png)
 
 ## 🚀 Stretch Features
 
