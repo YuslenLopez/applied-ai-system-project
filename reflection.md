@@ -55,4 +55,4 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 1.I will do more planning with the AI to understand the current status of the code and see what needs fixing. 
 
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
-
+1.This project helped me learn how to use AI in new ways other than just asking it to build chunks of code to solve a problem. I can now use AI as another hand in finding problems, testing cases, moving code, and writing code that I will look over to minimize unneccesary code. 
