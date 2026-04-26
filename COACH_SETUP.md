@@ -39,7 +39,7 @@ streamlit run app.py
 
 ### AI Coach Buttons (Available after making first guess)
 - **Should I guess higher? 📈** - Get confirmation and reasoning for guessing higher
-- **Should I guess lower? 📉** - Get confirmation and reasoning for guessing lower  
+- **Whats my best move? 📉** - Get a response for the optimal direction to move in and why   
 - **What's a new strategy? 💡** - Get a novel strategy to try (different from previously suggested ones)
 
 ### How It Works (RAG Principles)
