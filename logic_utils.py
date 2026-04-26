@@ -50,13 +50,13 @@ def check_guess(guess, secret):
     # Prefer numeric comparisons when both values are integers.
     if isinstance(guess_val, int) and isinstance(secret_val, int):
         if guess_val > secret_val:
-            return "Too High", "📉 Go LOWER!" #AI mentioned that the hint results where filpped from intented purpose. 
+            return "Too High", "📉 Go LOWER!"
         return "Too Low", "📈 Go HIGHER!"
 
     # Fallback to safe comparison for non-numeric secrets.
     try:
         if guess_val > secret_val:
-            return "Too High", "📉 Go LOWER!" #AI mentioned that the hint results where filpped from intented purpose.
+            return "Too High", "📉 Go LOWER!"
         return "Too Low", "📈 Go HIGHER!"
     except TypeError:
         return "Too Low", "📈 Go HIGHER!"

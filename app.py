@@ -2,6 +2,7 @@ import random
 import streamlit as st
 
 from logic_utils import get_range_for_difficulty, parse_guess, check_guess, update_score
+from coach import get_coach_response, extract_strategy_name
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
@@ -43,6 +44,12 @@ if "status" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+if "suggested_strategies" not in st.session_state:
+    st.session_state.suggested_strategies = []
+
+if "last_coach_response" not in st.session_state:
+    st.session_state.last_coach_response = None
+
 st.subheader("Make a guess")
 
 st.info(
@@ -56,6 +63,7 @@ with st.expander("Developer Debug Info"):
     st.write("Score:", st.session_state.score)
     st.write("Difficulty:", difficulty)
     st.write("History:", st.session_state.history)
+    st.write("Suggested Strategies:", st.session_state.suggested_strategies)
 
 raw_guess = st.text_input(
     "Enter your guess:",
@@ -76,6 +84,8 @@ if new_game:
     st.session_state.secret = random.randint(low, high)
     st.session_state.status = "playing"
     st.session_state.history = []
+    st.session_state.suggested_strategies = []
+    st.session_state.last_coach_response = None
     st.success("New game started.")
     st.rerun()
 
@@ -128,6 +138,54 @@ if submit:
                     f"The secret was {st.session_state.secret}. "
                     f"Score: {st.session_state.score}"
                 )
+
+st.divider()
+
+# Coach Section - Available during gameplay
+if st.session_state.status == "playing" and st.session_state.attempts > 0:
+    st.subheader("🤖 AI Coach")
+    st.caption("Need help with your next guess?")
+    
+    coach_col1, coach_col2 = st.columns(2)
+    
+    with coach_col1:
+        if st.button("What's my best move? 🎯"):
+            with st.spinner("Coach is thinking..."):
+                response = get_coach_response(
+                    query_type="best_move",
+                    secret=st.session_state.secret,
+                    low=low,
+                    high=high,
+                    guess_history=st.session_state.history,
+                    difficulty=difficulty,
+                    suggested_strategies=st.session_state.suggested_strategies,
+                    show_hints=show_hint,
+                )
+                st.session_state.last_coach_response = response
+                st.rerun()
+    
+    with coach_col2:
+        if st.button("What's a new strategy? 💡"):
+            with st.spinner("Coach is thinking..."):
+                response = get_coach_response(
+                    query_type="new_strategy",
+                    secret=st.session_state.secret,
+                    low=low,
+                    high=high,
+                    guess_history=st.session_state.history,
+                    difficulty=difficulty,
+                    suggested_strategies=st.session_state.suggested_strategies,
+                    show_hints=show_hint,
+                )
+                st.session_state.suggested_strategies.append(
+                    extract_strategy_name(response)
+                )
+                st.session_state.last_coach_response = response
+                st.rerun()
+    
+    # Display coach response if available
+    if st.session_state.last_coach_response:
+        st.info(f"💬 Coach: {st.session_state.last_coach_response}")
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")
