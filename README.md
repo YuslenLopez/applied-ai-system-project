@@ -2,13 +2,13 @@
 ## Summary of Original Goals: 
 The original goal of the project is a small number guessing game in which a random number is selected between a range determined by difficulty. The user then trys to guess the secret number with the use of hints (if toggled on) in a limited number of attempts. The user can enter numbers, receive accurate hints, see if they guessed correctly and run more than one game as is. 
 
-# 🎮 The Num Gusser Using RAG 
+# 🎮 The Num Guesser Using RAG 
 ## Summary of Improved Project: 
 The new project still uses all of the originals game mechanics and just adds to it by implementing a chat bot that users can interact with to receive more help or work out new strategies. This matters because now the game also can help users learn new strategies while playing a fun little game.
 
 ## Architecture Overview:
 The system uses streamlit app as a main interface where users can make a guess and submit their answers. The answers are then fed to the logical backend in python which validates and returns results. The user my also select to receive a helpful response from an LLM and this is handled by the python backend as well. 
-![alt text](assets\Architecture.png)
+![alt text](assets/Architecture.png)
 
 ## Setup Instructions:
 For easy set up of API_KEY and app please look at the COACH_SETUP.md 
@@ -16,8 +16,8 @@ For easy set up of API_KEY and app please look at the COACH_SETUP.md
 ## Sample interactions 
 
 Example 1:
-![alt text](assets\test1.png)
-![alt text](assets\test1-b.png)
+![alt text](assets/test1.png)
+![alt text](assets/test1-b.png)
 
 Example 2: 
 
@@ -35,13 +35,13 @@ The project thus far has taught me of the crusial need for guardrails when using
 One other thing of importance I noticed is that tricky english wording or code that could often make a human stumble can confuse the AI into thinking lines of code containing logic are wrong. AS shown in the following pictures. 
 
 Picture 1 Code in question: 
-![alt text](assets\image-1.png)
+![alt text](assets/image-1.png)
 
 Picture 2 Response:
-![alt text](assets\image-2.png)
+![alt text](assets/image-2.png)
 
 Picture 3 Questioned Error: 
-![alt text](assets\image-3.png)
+![alt text](assets/image-3.png)
 
 ## 🚨 The Situation (original Project)
 
