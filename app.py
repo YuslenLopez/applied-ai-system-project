@@ -9,6 +9,16 @@ st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 st.title("🎮 Game Glitch Investigator")
 st.caption("An AI-generated guessing game. Something is off.")
 
+# Show balloons if player won
+if "status" in st.session_state and st.session_state.status == "won":
+    st.balloons()
+
+st.sidebar.header("🤖 AI Coach")
+
+# Placeholder for coach content - will be filled after show_hint is defined
+coach_placeholder = st.sidebar.empty()
+
+st.sidebar.divider()
 st.sidebar.header("Settings")
 
 difficulty = st.sidebar.selectbox(
@@ -50,6 +60,12 @@ if "suggested_strategies" not in st.session_state:
 if "last_coach_response" not in st.session_state:
     st.session_state.last_coach_response = None
 
+if "show_hints" not in st.session_state:
+    st.session_state.show_hints = True
+
+if "last_hint_message" not in st.session_state:
+    st.session_state.last_hint_message = None
+
 st.subheader("Make a guess")
 
 st.info(
@@ -76,7 +92,51 @@ with col1:
 with col2:
     new_game = st.button("New Game 🔁")
 with col3:
-    show_hint = st.checkbox("Show hint", value=True)
+    st.session_state.show_hints = st.checkbox("Show hint", value=st.session_state.show_hints)
+
+# Coach section in sidebar - update placeholder after show_hint is defined
+if st.session_state.status == "playing" and st.session_state.attempts > 0:
+    with coach_placeholder.container():
+        st.caption("Need help?")
+        if st.button("Best Move? 🎯", use_container_width=True, key="best_move_btn"):
+            with st.spinner("Coach thinking..."):
+                response = get_coach_response(
+                    query_type="best_move",
+                    low=low,
+                    high=high,
+                    guess_history=st.session_state.history,
+                    difficulty=difficulty,
+                    suggested_strategies=st.session_state.suggested_strategies,
+                    show_hints=st.session_state.show_hints,
+                    last_outcome=st.session_state.last_hint_message,
+                )
+                st.session_state.last_coach_response = response
+                st.rerun()
+        
+        if st.button("New Strategy? 💡", use_container_width=True, key="strategy_btn"):
+            with st.spinner("Coach thinking..."):
+                response = get_coach_response(
+                    query_type="new_strategy",
+                    low=low,
+                    high=high,
+                    guess_history=st.session_state.history,
+                    difficulty=difficulty,
+                    suggested_strategies=st.session_state.suggested_strategies,
+                    show_hints=st.session_state.show_hints,
+                    last_outcome=st.session_state.last_hint_message,
+                )
+                st.session_state.suggested_strategies.append(
+                    extract_strategy_name(response)
+                )
+                st.session_state.last_coach_response = response
+                st.rerun()
+        
+        if st.session_state.last_coach_response:
+            st.caption("💬 Coach says:")
+            st.info(st.session_state.last_coach_response)
+else:
+    with coach_placeholder.container():
+        st.caption("Make a guess to unlock help!")
 
 if new_game:
     # Reset game state for the current difficulty
@@ -86,6 +146,7 @@ if new_game:
     st.session_state.history = []
     st.session_state.suggested_strategies = []
     st.session_state.last_coach_response = None
+    st.session_state.last_hint_message = None
     st.success("New game started.")
     st.rerun()
 
@@ -114,8 +175,8 @@ if submit:
 
         outcome, message = check_guess(guess_int, secret)
 
-        if show_hint:
-            st.warning(message)
+        # Store hint message for coach (always, regardless of show_hints setting)
+        st.session_state.last_hint_message = message
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
@@ -124,7 +185,6 @@ if submit:
         )
 
         if outcome == "Win":
-            st.balloons()
             st.session_state.status = "won"
             st.success(
                 f"You won! The secret was {st.session_state.secret}. "
@@ -138,54 +198,12 @@ if submit:
                     f"The secret was {st.session_state.secret}. "
                     f"Score: {st.session_state.score}"
                 )
+    
+    st.rerun()
 
-st.divider()
-
-# Coach Section - Available during gameplay
-if st.session_state.status == "playing" and st.session_state.attempts > 0:
-    st.subheader("🤖 AI Coach")
-    st.caption("Need help with your next guess?")
-    
-    coach_col1, coach_col2 = st.columns(2)
-    
-    with coach_col1:
-        if st.button("What's my best move? 🎯"):
-            with st.spinner("Coach is thinking..."):
-                response = get_coach_response(
-                    query_type="best_move",
-                    secret=st.session_state.secret,
-                    low=low,
-                    high=high,
-                    guess_history=st.session_state.history,
-                    difficulty=difficulty,
-                    suggested_strategies=st.session_state.suggested_strategies,
-                    show_hints=show_hint,
-                )
-                st.session_state.last_coach_response = response
-                st.rerun()
-    
-    with coach_col2:
-        if st.button("What's a new strategy? 💡"):
-            with st.spinner("Coach is thinking..."):
-                response = get_coach_response(
-                    query_type="new_strategy",
-                    secret=st.session_state.secret,
-                    low=low,
-                    high=high,
-                    guess_history=st.session_state.history,
-                    difficulty=difficulty,
-                    suggested_strategies=st.session_state.suggested_strategies,
-                    show_hints=show_hint,
-                )
-                st.session_state.suggested_strategies.append(
-                    extract_strategy_name(response)
-                )
-                st.session_state.last_coach_response = response
-                st.rerun()
-    
-    # Display coach response if available
-    if st.session_state.last_coach_response:
-        st.info(f"💬 Coach: {st.session_state.last_coach_response}")
+# Display hint if available and enabled
+if st.session_state.last_hint_message and st.session_state.show_hints:
+    st.warning(st.session_state.last_hint_message)
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")

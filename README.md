@@ -20,9 +20,10 @@ Example 1:
 ![alt text](assets/test1-b.png)
 
 Example 2: 
-
+![alt text](assets/test2.png)
 
 Example 3: 
+![alt text](assets/test3.png)
 
 ## Design Decisions: 
 Originally I was just going to feed the LLM the secret and ask for a riddle to be returns to provide users with more information to base their guesses on. However this approach was far too simple and did not provide the LLM with enough context to provide a meaningful response to the users each and everytime. As such now the model takes more context like prior guess history and if hints are on or off to give the user a more tailored response. This means there will be more tokens being used per input response but the overall quality of the answer is much better. 

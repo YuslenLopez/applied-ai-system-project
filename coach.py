@@ -10,26 +10,26 @@ load_dotenv()
 
 def get_coach_response(
     query_type: str,
-    secret: int,
     low: int,
     high: int,
     guess_history: list,
     difficulty: str,
     suggested_strategies: list,
     show_hints: bool = True,
+    last_outcome: str = None,
 ) -> str:
     """
     Get coaching advice from ChatGPT based on game state.
     
     Args:
         query_type: "best_move" or "new_strategy"
-        secret: The secret number
         low: Lower bound of range
         high: Upper bound of range
         guess_history: List of guesses the player has made
         difficulty: "Easy", "Normal", or "Hard"
         suggested_strategies: List of previously suggested strategies (for variety)
         show_hints: Whether hints are visible to the player (affects coach context)
+        last_outcome: The last hint message (e.g., "Too High", "Too Low", or "Win")
     
     Returns:
         Coach response string
@@ -43,13 +43,11 @@ def get_coach_response(
     # Calculate game state metrics
     if guess_history:
         last_guess = guess_history[-1]
-        off_by = abs(secret - last_guess)
         min_guess = min(guess_history)
         max_guess = max(guess_history)
         guesses_so_far = len(guess_history)
     else:
         last_guess = None
-        off_by = None
         min_guess = None
         max_guess = None
         guesses_so_far = 0
@@ -57,7 +55,6 @@ def get_coach_response(
     # Build context for the prompt
     context = f"""
 Game State:
-- Secret number: {secret}
 - Valid range: {low} to {high}
 - Difficulty: {difficulty}
 - Guesses made: {guess_history}
@@ -67,8 +64,9 @@ Game State:
     
     if last_guess is not None:
         context += f"- Last guess: {last_guess}\n"
+        if show_hints and last_outcome:
+            context += f"- Last hint: {last_outcome}\n"
         if show_hints:
-            context += f"- How far off: {off_by}\n"
             context += f"- Range of guesses so far: {min_guess} to {max_guess}\n"
         else:
             context += f"- (Hints disabled - coach should not reference how close/far they are)\n"
@@ -82,9 +80,9 @@ Game State:
 The player asked: "What's my best move?"
 
 You are a helpful game coach. Based on the game state above:
-1. Analyze whether they should guess HIGHER or LOWER
-2. Explain WHY and which direction is more strategic
-3. Suggest a specific next number or range to try
+1. **IF A HINT IS PROVIDED, THAT IS YOUR PRIMARY GUIDANCE.** Always use the hint feedback to determine direction (e.g., if "Too High", go LOWER).
+2. If no hint, analyze the guess pattern and suggest whether to go HIGHER or LOWER based on the binary search strategy.
+3. Explain WHY and suggest a specific next number to try.
 4. Keep it SHORT (2-3 sentences), actionable, and encouraging
 5. Consider previously suggested strategies: {suggested_strategies if suggested_strategies else "None yet"}
 
@@ -94,8 +92,7 @@ Think about: remaining range, how far off they are, and what a binary search app
 - The secret number
 - The exact valid range ({low} to {high})
 - Specific numbers that are the answer
-- How far off they are in absolute terms (e.g., "You're 3 away from the answer")
-Instead, use relative guidance like "You're in the upper half" or "Try the middle of your range."
+Instead, use guidance like "Go HIGHER" or "Try a lower number" based on the hint.
 
 {"⚠️ NOTE: Hints are DISABLED - The player cannot see directional feedback. Base guidance only on guess patterns." if not show_hints else ""}"""
     
