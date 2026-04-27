@@ -44,6 +44,11 @@ Picture 2 Response:
 Picture 3 Questioned Error: 
 ![alt text](assets/image-3.png)
 
+
+## Video with Loom: 
+https://www.loom.com/share/6a04ba848c13427c910e5015f32b8c23
+
+
 ## 🚨 The Situation (original Project)
 
 You asked an AI to build a simple "Number Guessing Game" using Streamlit.
